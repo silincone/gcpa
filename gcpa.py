@@ -109,20 +109,22 @@ def parseFile(filePath, onlyCriticalPath):
         module = {}
         slacks = []
         
+        _startPointForSlacks = f.tell()
+
         module[ModuleValues.Design] = parseDesignName(f)
         module[ModuleValues.Critical_Path] = parseCriticalPath(f)
         
         if onlyCriticalPath:
             return module
         
+        f.seek(_startPointForSlacks)
         for line in f:
             if "Slack:" in line:
                 slacks.append(parseSlack(f))
         
     module[ModuleValues.Slack] = slacks
-
     timings = []
-    timings.append(module[ModuleValues.Critical_Path])
+
     for slack in slacks:
         timings.append(slack[ModuleValues.Data_Path_Delay])
     try:
